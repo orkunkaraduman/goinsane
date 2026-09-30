@@ -1,3 +1,3 @@
 # Go Insane
 
-Package `goinsane` in development stage.
+Package `goinsane` is currently under development.
