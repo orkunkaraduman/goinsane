@@ -10,6 +10,7 @@ type NamedLock struct {
 }
 
 type NamedLocker interface {
+	Name() string
 	Lock()
 	TryLock() bool
 	Unlock()
@@ -72,6 +73,10 @@ func (h *namedLockHolder) decrease() {
 type namedLocker struct {
 	owner *NamedLock
 	name  string
+}
+
+func (l *namedLocker) Name() string {
+	return l.name
 }
 
 func (l *namedLocker) Lock() {
