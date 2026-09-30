@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync/atomic"
 )
 
 var _ Logger = (*log.Logger)(nil)
@@ -78,4 +79,33 @@ func (l *SimpleLogger) output(buf []byte) {
 		builder.WriteByte('\n')
 	}
 	l.Logger.Output(3, builder.String())
+}
+
+var defaultLoggerPointer atomic.Pointer[Logger]
+
+func init() {
+	SetDefaultLogger(&SimpleLogger{Logger: log.Default()})
+}
+
+func DefaultLogger() Logger {
+	return *defaultLoggerPointer.Load()
+}
+
+func SetDefaultLogger(logger Logger) {
+	if logger == nil {
+		logger = (*SimpleLogger)(nil)
+	}
+	defaultLoggerPointer.Store(&logger)
+}
+
+func LogPrint(v ...any) {
+	(*defaultLoggerPointer.Load()).Print(v...)
+}
+
+func LogPrintf(format string, v ...any) {
+	(*defaultLoggerPointer.Load()).Printf(format, v...)
+}
+
+func LogPrintln(v ...any) {
+	(*defaultLoggerPointer.Load()).Println(v...)
 }
