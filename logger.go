@@ -18,7 +18,12 @@ type Logger interface {
 	Println(v ...any)
 }
 
+type StackLogger interface {
+	Stack(msg string, all bool)
+}
+
 var _ Logger = SimpleLogger{}
+var _ StackLogger = SimpleLogger{}
 
 type SimpleLogger struct {
 	Logger *log.Logger
@@ -108,4 +113,10 @@ func LogPrintf(format string, v ...any) {
 
 func LogPrintln(v ...any) {
 	(*defaultLoggerPointer.Load()).Println(v...)
+}
+
+func LogStack(msg string, all bool) {
+	if l, ok := (*defaultLoggerPointer.Load()).(StackLogger); ok {
+		l.Stack(msg, all)
+	}
 }
