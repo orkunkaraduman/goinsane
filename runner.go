@@ -1,4 +1,4 @@
-package fynekit
+package goinsane
 
 import (
 	"context"
