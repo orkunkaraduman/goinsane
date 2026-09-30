@@ -18,38 +18,38 @@ type Logger interface {
 	Println(v ...any)
 }
 
-var _ Logger = (*SimpleLogger)(nil)
+var _ Logger = SimpleLogger{}
 
 type SimpleLogger struct {
 	Logger *log.Logger
 }
 
-func (l *SimpleLogger) Print(v ...any) {
-	if l == nil || l.Logger == nil {
+func (l SimpleLogger) Print(v ...any) {
+	if l.Logger == nil {
 		return
 	}
 	buf := make([]byte, 0, 4096)
 	l.output(fmt.Append(buf, v...))
 }
 
-func (l *SimpleLogger) Printf(format string, v ...any) {
-	if l == nil || l.Logger == nil {
+func (l SimpleLogger) Printf(format string, v ...any) {
+	if l.Logger == nil {
 		return
 	}
 	buf := make([]byte, 0, 4096)
 	l.output(fmt.Appendf(buf, format, v...))
 }
 
-func (l *SimpleLogger) Println(v ...any) {
-	if l == nil || l.Logger == nil {
+func (l SimpleLogger) Println(v ...any) {
+	if l.Logger == nil {
 		return
 	}
 	buf := make([]byte, 0, 4096)
 	l.output(fmt.Appendln(buf, v...))
 }
 
-func (l *SimpleLogger) Stack(msg string, all bool) {
-	if l == nil || l.Logger == nil {
+func (l SimpleLogger) Stack(msg string, all bool) {
+	if l.Logger == nil {
 		return
 	}
 	buf := make([]byte, 1<<16)
@@ -66,7 +66,7 @@ func (l *SimpleLogger) Stack(msg string, all bool) {
 	l.Logger.Output(2, builder.String())
 }
 
-func (l *SimpleLogger) output(buf []byte) {
+func (l SimpleLogger) output(buf []byte) {
 	builder := new(strings.Builder)
 	if n := len(buf); n > 0 && buf[n-1] == '\n' {
 		buf = buf[:n-1]
@@ -84,7 +84,7 @@ func (l *SimpleLogger) output(buf []byte) {
 var defaultLoggerPointer atomic.Pointer[Logger]
 
 func init() {
-	SetDefaultLogger(&SimpleLogger{Logger: log.Default()})
+	SetDefaultLogger(nil)
 }
 
 func DefaultLogger() Logger {
@@ -93,7 +93,7 @@ func DefaultLogger() Logger {
 
 func SetDefaultLogger(logger Logger) {
 	if logger == nil {
-		logger = (*SimpleLogger)(nil)
+		logger = SimpleLogger{Logger: log.Default()}
 	}
 	defaultLoggerPointer.Store(&logger)
 }
