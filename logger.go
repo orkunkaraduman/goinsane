@@ -59,8 +59,8 @@ func (l SimpleLogger) Stack(msg string, all bool) {
 	}
 	buf := make([]byte, 1<<16)
 	buf = buf[:runtime.Stack(buf[:len(buf)-1], all)]
-	builder := new(strings.Builder)
 	msg = strconv.Quote(msg)
+	builder := new(strings.Builder)
 	builder.WriteString(msg[1 : len(msg)-1])
 	builder.WriteByte('\n')
 	for b := range bytes.SplitSeq(buf, []byte{'\n'}) {
