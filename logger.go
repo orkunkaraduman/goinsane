@@ -27,6 +27,7 @@ var _ StackLogger = SimpleLogger{}
 
 type SimpleLogger struct {
 	Logger *log.Logger
+	Prefix string
 }
 
 func (l SimpleLogger) Print(v ...any) {
@@ -34,6 +35,7 @@ func (l SimpleLogger) Print(v ...any) {
 		return
 	}
 	buf := make([]byte, 0, 4096)
+	buf = append(buf, l.Prefix...)
 	l.output(fmt.Append(buf, v...))
 }
 
@@ -42,6 +44,7 @@ func (l SimpleLogger) Printf(format string, v ...any) {
 		return
 	}
 	buf := make([]byte, 0, 4096)
+	buf = append(buf, l.Prefix...)
 	l.output(fmt.Appendf(buf, format, v...))
 }
 
@@ -50,6 +53,7 @@ func (l SimpleLogger) Println(v ...any) {
 		return
 	}
 	buf := make([]byte, 0, 4096)
+	buf = append(buf, l.Prefix...)
 	l.output(fmt.Appendln(buf, v...))
 }
 
@@ -59,9 +63,9 @@ func (l SimpleLogger) Stack(msg string, all bool) {
 	}
 	buf := make([]byte, 1<<16)
 	buf = buf[:runtime.Stack(buf[:len(buf)-1], all)]
-	msg = strconv.Quote(msg)
+	s := strconv.Quote(l.Prefix + msg)
 	builder := new(strings.Builder)
-	builder.WriteString(msg[1 : len(msg)-1])
+	builder.WriteString(s[1 : len(s)-1])
 	builder.WriteByte('\n')
 	for b := range bytes.SplitSeq(buf, []byte{'\n'}) {
 		builder.WriteByte('\t')
