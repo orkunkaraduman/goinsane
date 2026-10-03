@@ -93,30 +93,18 @@ func (l SimpleLogger) output(buf []byte) {
 var defaultLoggerPointer atomic.Pointer[Logger]
 
 func init() {
-	SetDefaultLogger(nil)
+	SetLogger(nil)
 }
 
-func DefaultLogger() Logger {
-	return *defaultLoggerPointer.Load()
-}
-
-func SetDefaultLogger(logger Logger) {
+func SetLogger(logger Logger) {
 	if logger == nil {
 		logger = SimpleLogger{Logger: log.Default()}
 	}
 	defaultLoggerPointer.Store(&logger)
 }
 
-func LogPrint(v ...any) {
-	(*defaultLoggerPointer.Load()).Print(v...)
-}
-
-func LogPrintf(format string, v ...any) {
-	(*defaultLoggerPointer.Load()).Printf(format, v...)
-}
-
-func LogPrintln(v ...any) {
-	(*defaultLoggerPointer.Load()).Println(v...)
+func Log() Logger {
+	return *defaultLoggerPointer.Load()
 }
 
 func LogStack(msg string, all bool) {
