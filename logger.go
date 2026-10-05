@@ -19,6 +19,7 @@ type Logger interface {
 }
 
 type StackLogger interface {
+	Logger
 	Stack(msg string, all bool)
 }
 
