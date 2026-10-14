@@ -75,6 +75,7 @@ func (r *ContextRunner) Cancel() {
 
 func (r *ContextRunner) Wait() {
 	<-r.ctx.Done()
+	r.cancel()
 	r.wg.Wait()
 }
 
